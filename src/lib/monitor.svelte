@@ -1,4 +1,23 @@
 <script lang="ts">
+import { cubicIn, cubicInOut } from "svelte/easing";
+
+import { tweened } from "svelte/motion";
+
+        const rotateDegre = tweened(0, {
+		    duration: 300,
+		    easing: cubicInOut
+	    });
+
+
+    function rotate(event: MouseEvent): void {
+        if ($rotateDegre == 0) {
+            $rotateDegre = -50;
+            setTimeout(() => {
+                $rotateDegre = 0;
+            }, 1000);
+        }
+        
+    };
 
 </script>
 
@@ -6,11 +25,11 @@
     <div class="vertical-partition">
         <div class="slot-machine-body">
             <div class="monitor radius-top">
-                <!-- <div class="screen">
-                    <div class="screen-image-1"></div>
+                <div class="screen">
+                    <!-- <div class="screen-image-1"></div>
                     <div class="screen-image-2"></div>
-                    <div class="screen-image-3"></div>
-                </div> -->
+                    <div class="screen-image-3"></div> -->
+                </div>
             </div>
             <div class="monitor-body radius-bottom">
                 <div class="keyboard radius-bottom">
@@ -20,8 +39,9 @@
         </div>
     </div>
     <div class="vertical-partition bottom-100">
-        <div class="vertical-partition">
-            <div class="start-lever">
+        <div class="vertical-partition"  >
+            
+            <div id="lever" on:click={rotate}  class="start-lever" style="transform: perspective(15cm) rotateX({$rotateDegre}deg); ">
 
             </div>
             <div class="distance-piece">
@@ -70,6 +90,7 @@
     .start-lever {
         width: 20px;
         height: 180px;
+        transform-origin: 50% 120%;
         background-color: chartreuse;
     }
 
