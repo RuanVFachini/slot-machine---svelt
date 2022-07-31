@@ -2,19 +2,40 @@
 import { cubicIn, cubicInOut } from "svelte/easing";
 
 import { tweened } from "svelte/motion";
+import Dice from "./dice.svelte";
+import getRandom from "../utils/random.utils";
 
-        const rotateDegre = tweened(0, {
-		    duration: 300,
-		    easing: cubicInOut
-	    });
+    export let level = 15;
 
+    let dice1 = 0;
+    let dice2 = 0;
+    let dice3 = 0;
+
+    const rotateDegre = tweened(0, {
+        duration: 300,
+        easing: cubicInOut
+    });
+
+    function random(dice: any): number {
+        return dice + (getRandom(level) * 90);
+    }
+
+    function randomAll(): void {
+        Promise.all([
+            dice1 = random(dice1),
+            dice2 = random(dice2),
+            dice3 = random(dice3),
+        ]);
+    }
 
     function rotate(event: MouseEvent): void {
         if ($rotateDegre == 0) {
             $rotateDegre = -50;
             setTimeout(() => {
                 $rotateDegre = 0;
-            }, 1000);
+
+                randomAll();
+            }, 200);
         }
         
     };
@@ -26,9 +47,15 @@ import { tweened } from "svelte/motion";
         <div class="slot-machine-body">
             <div class="monitor radius-top">
                 <div class="screen">
-                    <!-- <div class="screen-image-1"></div>
-                    <div class="screen-image-2"></div>
-                    <div class="screen-image-3"></div> -->
+                    <div class="screen-image">
+                        <Dice degre={dice1}></Dice>
+                    </div>
+                    <div class="screen-image">
+                        <Dice degre={dice2}></Dice>
+                    </div>
+                    <div class="screen-image">
+                        <Dice degre={dice3}></Dice>
+                    </div>
                 </div>
             </div>
             <div class="monitor-body radius-bottom">
@@ -57,19 +84,12 @@ import { tweened } from "svelte/motion";
         margin-bottom: 100px;
     }
 
-    .screen-image-1 {
+    .screen-image {
         flex: 1;
-        background-color: crimson;
-    }
-
-    .screen-image-2 {
-        flex: 1;
-        background-color: darkgoldenrod;
-    }
-
-    .screen-image-3 {
-        flex: 1;
-        background-color: darkolivegreen;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
     }
 
     .distance-piece  {
@@ -128,6 +148,7 @@ import { tweened } from "svelte/motion";
         /* margin: 30px; */
         flex: 1;
         display: flex;
+        padding: 20px;
     }
 
     .keyboard {
