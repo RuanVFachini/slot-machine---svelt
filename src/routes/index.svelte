@@ -1,8 +1,8 @@
 <script lang="ts">
-	import Monitor from "$lib/monitor.svelte";
+	import Machine from "$lib/machine.svelte";
 </script>
 
-<Monitor></Monitor>
+<Machine></Machine>
 
 <style>
 </style>
