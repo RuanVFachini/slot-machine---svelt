@@ -12,8 +12,8 @@
 		/* background-color: rebeccapurple; */
 		display: flex;
 		justify-content: center;
-		align-items: flex-end;
-		height: 100vh;
+		align-items: center;
+		/* height: 100vh; */
 		/* display: flex; */
 		/* flex-direction: column; */
 		/* justify-items: start; */

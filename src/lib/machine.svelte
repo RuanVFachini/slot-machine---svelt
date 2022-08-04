@@ -1,9 +1,13 @@
 <script lang="ts">
 import MachineLever from "./machine-lever.svelte";
 import MachineScreen from "./machine-screen.svelte";
+import MachineRank from "./machine-rank.svelte";
+import type { ScoreItem } from "src/models/models";
 
     export let level = 15;
     let screen : {randomAll(): void};
+
+    let scoreList: ScoreItem[] = [];
 
     function random() {
         screen.randomAll();
@@ -15,11 +19,11 @@ import MachineScreen from "./machine-screen.svelte";
     <div class="vertical-partition">
         <div class="slot-machine-body">
             <div class="monitor radius-top">
-                <MachineScreen bind:screen={screen} level={level}></MachineScreen>
+                <MachineScreen bind:screen={screen} bind:level={level}></MachineScreen>
             </div>
             <div class="monitor-body radius-bottom">
                 <div class="keyboard radius-bottom">
-
+                    <MachineRank bind:scoreList={scoreList}></MachineRank>
                 </div>
             </div>
         </div>
@@ -66,8 +70,6 @@ import MachineScreen from "./machine-screen.svelte";
 
     .keyboard {
         flex: 1;
-        margin: 20px;
-        background-color: brown;
     }
 
     .radius-top {

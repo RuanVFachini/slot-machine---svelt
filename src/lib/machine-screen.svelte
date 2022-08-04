@@ -4,20 +4,20 @@
 
     export let level = 15;
 
-    let dice1 = 0;
-    let dice2 = 0;
-    let dice3 = 0;
+    let diceRotate1 = 0;
+    let diceRotate2 = 0;
+    let diceRotate3 = 0;
 
     function random(dice: any): number {
-        return dice + (getRandom(level) * 90);
+        return dice + (getRandom(level) * 45);
     }
 
     export const screen = {
         randomAll(): void {
             Promise.all([
-                dice1 = random(dice1),
-                dice2 = random(dice2),
-                dice3 = random(dice3),
+                diceRotate1 = random(diceRotate1),
+                diceRotate2 = random(diceRotate2),
+                diceRotate3 = random(diceRotate3),
             ]);
         }
     }
@@ -25,13 +25,13 @@
 
 <div class="screen">
     <div class="screen-image">
-        <Dice degre={dice1}></Dice>
+        <Dice degre={diceRotate1}></Dice>
     </div>
     <div class="screen-image">
-        <Dice degre={dice2}></Dice>
+        <Dice degre={diceRotate2}></Dice>
     </div>
     <div class="screen-image">
-        <Dice degre={dice3}></Dice>
+        <Dice degre={diceRotate3}></Dice>
     </div>
 </div>
 
