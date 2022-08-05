@@ -1,8 +1,10 @@
 <script lang="ts">
-import MachineLever from "./machine-lever.svelte";
-import MachineScreen from "./machine-screen.svelte";
-import MachineRank from "./machine-rank.svelte";
-import type { ScoreItem } from "src/models/models";
+    import { onMount } from 'svelte';
+
+    import MachineLever from "./machine-lever.svelte";
+    import MachineScreen from "./machine-screen.svelte";
+    import MachineRank from "./machine-rank.svelte";
+    import type { ScoreItem } from "src/models/models";
 
     export let level = 15;
     let screen : {randomAll(): void};
@@ -13,8 +15,13 @@ import type { ScoreItem } from "src/models/models";
         screen.randomAll();
     }
 
+    onMount(() => {
+        let socket = new WebSocket("wss://localhost:7123/score");
+        socket.onmessage = (message) => {
+            scoreList = JSON.parse(message.data);
+        };
+    })
 </script>
-
 <div class="slot-machine">
     <div class="vertical-partition">
         <div class="slot-machine-body">

@@ -1,7 +1,8 @@
 <script lang="ts">
     import Dice from "./dice.svelte";
     import axios from "axios";
-import type { DiceResult } from "src/models/models";
+    import type { DiceResult } from "src/models/models";
+
 
     export let level = 15;
 
@@ -11,12 +12,19 @@ import type { DiceResult } from "src/models/models";
 
     export const screen = {
         randomAll(): void {
+
             axios.post<DiceResult>("https://localhost:7123/dice/sort", {
                 sides: 8,
             }).then(resp => {
-                diceRotate1 = resp.data.dice1Steps;
-                diceRotate2 = resp.data.dice2Steps;
-                diceRotate3 = resp.data.dice3Steps;
+                diceRotate1 = 0;
+                diceRotate2 = 0;
+                diceRotate3 = 0;
+                setTimeout(() => {
+                    diceRotate1 = resp.data.dice1Steps;
+                    diceRotate2 = resp.data.dice2Steps;
+                    diceRotate3 = resp.data.dice3Steps;
+                }, 500)
+                
             }).catch(erros => {
                 console.log(erros);
                 alert("Api connection error. See console for more details.");
