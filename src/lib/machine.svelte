@@ -20,7 +20,7 @@
         socket.onmessage = (message) => {
             scoreList = JSON.parse(message.data);
         };
-    })
+    });
 </script>
 <div class="slot-machine">
     <div class="vertical-partition">

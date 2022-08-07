@@ -2,8 +2,9 @@ using System.Net;
 using System.Net.WebSockets;
 using System.Text;
 using System.Text.Json;
-using Api.Dices;
+using Api.Extensions;
 using Api.Scores;
+using Api.Services;
 using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,7 +16,7 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddSingleton(new ScoreList());
+builder.Services.AddSingleton(new LeverService());
 
 builder.Services.AddCors(options =>
 {
@@ -54,19 +55,28 @@ var webSocketOptions = new WebSocketOptions
 
 app.UseWebSockets(webSocketOptions);
 
-app.Map("score", async (HttpContext context, [FromServices] ScoreList list) => {
+app.Map("score", async (HttpContext context, [FromServices] LeverService leverService) => {
   if (!context.WebSockets.IsWebSocketRequest) {
     context.Response.StatusCode = (int) HttpStatusCode.BadRequest;
+    return;
   }
   using var webSocket = await context.WebSockets.AcceptWebSocketAsync();
   
   while(true) {
-    var data = Encoding.ASCII.GetBytes(JsonSerializer.Serialize(list, new JsonSerializerOptions() {
-      PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-    }));
-    await webSocket.SendAsync(data, WebSocketMessageType.Text, true, CancellationToken.None);
+    await webSocket.SendAsync(leverService.ScoreList);
     Thread.Sleep(1000);
   }
+});
+
+app.Map("sort", async (HttpContext context, [FromServices] LeverService leverService) => {
+  if (!context.WebSockets.IsWebSocketRequest) {
+    context.Response.StatusCode = (int) HttpStatusCode.BadRequest;
+    return;
+  }
+  using var webSocket = await context.WebSockets.AcceptWebSocketAsync();
+
+  await leverService.LeverAsync(webSocket);
+  
 });
 
 await app.RunAsync();
