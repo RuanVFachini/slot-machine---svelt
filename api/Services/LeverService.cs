@@ -2,25 +2,22 @@ using System.Net.WebSockets;
 using Api.Dices;
 using Api.Extensions;
 using Api.Players;
-using Api.Scores;
 
 namespace Api.Levers;
 
 public interface ILeverService
 {
-    ScoreList ScoreList {get;}
     Task LeverAsync(WebSocket webSocket, string username);
     DiceResult Sort(int sides, string username);
 }
 
-public class LeverService: ILeverService {
+public class LeverService: ILeverService
+{
+    private readonly ISessionService _sessionService;
 
-    public ScoreList ScoreList => _scoreList;
-    private readonly ScoreList _scoreList;
-
-    public LeverService()
+    public LeverService(ISessionService sessionService)
     {
-        _scoreList = new ScoreList();
+        _sessionService = sessionService;
     }
 
     public async Task LeverAsync(WebSocket webSocket, string username)
@@ -30,7 +27,12 @@ public class LeverService: ILeverService {
         while (!message.ReceiveResult.CloseStatus.HasValue)
         {
             if (message.Message != null) {
-                await webSocket.SendAsync(Sort(message.Message.Sides, username));
+                var sortResult = Sort(message.Message.Sides, username);
+
+                if (sortResult.Winner) {
+                    _sessionService.IncreaseScore(username);
+                }
+                await webSocket.SendAsync(sortResult);
             }
 
             await webSocket.ReceiveAsync<DiceRequest>();
@@ -54,19 +56,6 @@ public class LeverService: ILeverService {
         var dice2Steps = DiceSort(razon);
         var dice3Steps = DiceSort(razon);
 
-        var sortResult = new DiceResult(dice1Steps, dice2Steps, dice3Steps);
-
-        if (sortResult.Winner) {
-            var player = ScoreList.FirstOrDefault(x => x.Name == username);
-
-            if (player == null) {
-                player = new Player(username, 0);
-                ScoreList.Add(player);
-            }
-
-            player.Score++;
-        }
-
-        return sortResult;
+        return new DiceResult(dice1Steps, dice2Steps, dice3Steps);
     }
 }

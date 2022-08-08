@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.WebSockets;
 using Api.Extensions;
 using Api.Levers;
+using Api.Players;
 using Api.Tokens;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,8 +15,9 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddSingleton<ILeverService>(new LeverService());
-builder.Services.AddSingleton<ITokenService>(new TokenService());
+builder.Services.AddSingleton<ISessionService>(new SessionService());
+builder.Services.AddScoped<ILeverService, LeverService>();
+builder.Services.AddScoped<ITokenService, TokenService>();
 
 builder.Services.AddCors(options =>
 {
@@ -57,7 +59,8 @@ app.UseWebSockets(webSocketOptions);
 app.Map("score", async (
   HttpContext context,
   [FromServices] ILeverService leverService,
-  [FromServices] ITokenService tokenService) => {
+  [FromServices] ITokenService tokenService,
+  [FromServices] ISessionService sessionService) => {
 
   if (!context.WebSockets.IsWebSocketRequest) {
     context.Response.StatusCode = (int) HttpStatusCode.BadRequest;
@@ -71,7 +74,7 @@ app.Map("score", async (
     using var webSocket = await context.WebSockets.AcceptWebSocketAsync();
   
     while(true) {
-      await webSocket.SendAsync(leverService.ScoreList);
+      await webSocket.SendAsync(sessionService.Sessions);
       Thread.Sleep(1000);
     }
   }
