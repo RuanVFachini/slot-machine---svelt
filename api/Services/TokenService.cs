@@ -8,7 +8,7 @@ namespace Api.Tokens;
 public interface ITokenService
 {
     string Create(string username);
-    (string Username, bool Authenticated) Validate(string token);
+    ClaimsPrincipal? Validate(string token);
 }
 
 public class TokenService : ITokenService
@@ -35,7 +35,7 @@ public class TokenService : ITokenService
         return TokenHandler.WriteToken(securityToken);
     }
 
-    public (string Username, bool Authenticated) Validate(string token)
+    public ClaimsPrincipal? Validate(string token)
     {
         try
         {
@@ -49,12 +49,11 @@ public class TokenService : ITokenService
                 IssuerSigningKey = SecurityKey
             }, out SecurityToken validatedToken);
 
-            string nameIdentifier = claimsPrincipal.Claims.First(x => x.Type == ClaimTypes.NameIdentifier).Value;
-            return (nameIdentifier, true);
+            return claimsPrincipal;
         }
         catch (Exception e)
         {
-            return (string.Empty, false);
+            return null;
         }
     }
 }
