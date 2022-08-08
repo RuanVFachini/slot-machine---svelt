@@ -1,10 +1,8 @@
 using System.Net;
 using System.Net.WebSockets;
-using System.Text;
-using System.Text.Json;
 using Api.Extensions;
-using Api.Scores;
-using Api.Services;
+using Api.Levers;
+using Api.Tokens;
 using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,10 +11,11 @@ var  MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 // Add services to the container.
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddSingleton(new LeverService());
+
+builder.Services.AddSingleton<ILeverService>(new LeverService());
+builder.Services.AddSingleton<ITokenService>(new TokenService());
 
 builder.Services.AddCors(options =>
 {
@@ -50,7 +49,7 @@ app.MapControllers();
 
 var webSocketOptions = new WebSocketOptions
 {
-    KeepAliveInterval = TimeSpan.FromMinutes(2)
+    KeepAliveInterval = TimeSpan.FromMinutes(2),
 };
 
 app.UseWebSockets(webSocketOptions);
@@ -68,11 +67,12 @@ app.Map("score", async (HttpContext context, [FromServices] LeverService leverSe
   }
 });
 
-app.Map("sort", async (HttpContext context, [FromServices] LeverService leverService) => {
+app.Map("sort", async (HttpContext context, [FromServices] ILeverService leverService) => {
   if (!context.WebSockets.IsWebSocketRequest) {
     context.Response.StatusCode = (int) HttpStatusCode.BadRequest;
     return;
   }
+
   using var webSocket = await context.WebSockets.AcceptWebSocketAsync();
 
   await leverService.LeverAsync(webSocket);

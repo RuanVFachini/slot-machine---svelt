@@ -4,8 +4,15 @@ using Api.Extensions;
 using Api.Players;
 using Api.Scores;
 
-namespace Api.Services;
-public class LeverService {
+namespace Api.Levers;
+
+public interface ILeverService
+{
+    Task LeverAsync(WebSocket webSocket);
+    DiceResult Sort(int sides);
+}
+
+public class LeverService: ILeverService {
 
     public readonly ScoreList ScoreList;
 
