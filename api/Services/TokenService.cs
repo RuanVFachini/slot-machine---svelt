@@ -1,5 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Principal;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
 
@@ -8,8 +9,7 @@ namespace Api.Tokens;
 public interface ITokenService
 {
     string Create(string username);
-    bool Validate(string token);
-
+    (string Username, bool Authenticated) Validate(string token);
 }
 
 public class TokenService : ITokenService
@@ -24,7 +24,8 @@ public class TokenService : ITokenService
     {
         var tokenDescriptor = new SecurityTokenDescriptor
         {
-            Subject = new ClaimsIdentity(new Claim[]{}),
+            Subject = new ClaimsIdentity(
+                new Claim[]{ new Claim(ClaimTypes.NameIdentifier, username) }),
             Expires = DateTime.UtcNow.AddDays(7),
             Issuer = Issuer,
             Audience = Audience,
@@ -35,11 +36,11 @@ public class TokenService : ITokenService
         return TokenHandler.WriteToken(securityToken);
     }
 
-    public bool Validate(string token)
+    public (string Username, bool Authenticated) Validate(string token)
     {
         try
         {
-            TokenHandler.ValidateToken(token, new TokenValidationParameters
+            var claimsPrincipal = TokenHandler.ValidateToken(token, new TokenValidationParameters
             {
                 ValidateIssuerSigningKey = true,
                 ValidateIssuer = true,
@@ -48,12 +49,13 @@ public class TokenService : ITokenService
                 ValidAudience = Audience,
                 IssuerSigningKey = SecurityKey
             }, out SecurityToken validatedToken);
+
+            string nameIdentifier = claimsPrincipal.Claims.First(x => x.Type == ClaimTypes.NameIdentifier).Value;
+            return (nameIdentifier, true);
         }
         catch (Exception e)
         {
-            return false;
+            return (string.Empty, false);
         }
-
-        return true;
     }
 }

@@ -1,24 +1,32 @@
 <script lang="ts">
     import { onMount } from 'svelte';
+    import { w3cwebsocket as WebSocketConnection } from "websocket";
 
     import MachineLever from "./machine-lever.svelte";
     import MachineScreen from "./machine-screen.svelte";
     import MachineRank from "./machine-rank.svelte";
     import type { ScoreItem } from "src/models/models";
 
-    export let level = 15;
-    let screen : {randomAll(): void};
+    export let token: string;
 
+    let screen : { randomAll(): void };
     let scoreList: ScoreItem[] = [];
+    let socket: WebSocketConnection;
 
     function random() {
         screen.randomAll();
     }
 
     onMount(() => {
-        let socket = new WebSocket("wss://localhost:7123/score");
+        debugger
+        socket = new WebSocketConnection(`wss://localhost:7123/score?Token=${token}`);
+
         socket.onmessage = (message) => {
-            scoreList = JSON.parse(message.data);
+            if (typeof message.data == 'string') {
+                let result = JSON.parse(message.data) as ScoreItem[];
+                scoreList = result;
+            }
+            
         };
     });
 </script>
@@ -26,7 +34,7 @@
     <div class="vertical-partition">
         <div class="slot-machine-body">
             <div class="monitor radius-top">
-                <MachineScreen bind:screen={screen} bind:level={level}></MachineScreen>
+                <MachineScreen bind:screen={screen} bind:token={token}></MachineScreen>
             </div>
             <div class="monitor-body radius-bottom">
                 <div class="keyboard radius-bottom">

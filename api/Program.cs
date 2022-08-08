@@ -54,29 +54,48 @@ var webSocketOptions = new WebSocketOptions
 
 app.UseWebSockets(webSocketOptions);
 
-app.Map("score", async (HttpContext context, [FromServices] LeverService leverService) => {
+app.Map("score", async (
+  HttpContext context,
+  [FromServices] ILeverService leverService,
+  [FromServices] ITokenService tokenService) => {
+
   if (!context.WebSockets.IsWebSocketRequest) {
     context.Response.StatusCode = (int) HttpStatusCode.BadRequest;
     return;
   }
-  using var webSocket = await context.WebSockets.AcceptWebSocketAsync();
+
+  var token = context.Request.Query["Token"];
+  var jwtValidation = tokenService.Validate(token);
+
+  if (jwtValidation.Authenticated) {
+    using var webSocket = await context.WebSockets.AcceptWebSocketAsync();
   
-  while(true) {
-    await webSocket.SendAsync(leverService.ScoreList);
-    Thread.Sleep(1000);
+    while(true) {
+      await webSocket.SendAsync(leverService.ScoreList);
+      Thread.Sleep(1000);
+    }
   }
+  
 });
 
-app.Map("sort", async (HttpContext context, [FromServices] ILeverService leverService) => {
+app.Map("sort", async (
+  HttpContext context,
+  [FromServices] ILeverService leverService,
+  [FromServices] ITokenService tokenService) => {
+
   if (!context.WebSockets.IsWebSocketRequest) {
     context.Response.StatusCode = (int) HttpStatusCode.BadRequest;
     return;
   }
 
-  using var webSocket = await context.WebSockets.AcceptWebSocketAsync();
+  var token = context.Request.Query["Token"];
+  var jwtValidation = tokenService.Validate(token);
 
-  await leverService.LeverAsync(webSocket);
-  
+  if (jwtValidation.Authenticated) {
+    using var webSocket = await context.WebSockets.AcceptWebSocketAsync();
+
+    await leverService.LeverAsync(webSocket, jwtValidation.Username);
+  }
 });
 
 await app.RunAsync();

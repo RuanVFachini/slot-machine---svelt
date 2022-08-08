@@ -8,27 +8,29 @@ namespace Api.Levers;
 
 public interface ILeverService
 {
-    Task LeverAsync(WebSocket webSocket);
-    DiceResult Sort(int sides);
+    ScoreList ScoreList {get;}
+    Task LeverAsync(WebSocket webSocket, string username);
+    DiceResult Sort(int sides, string username);
 }
 
 public class LeverService: ILeverService {
 
-    public readonly ScoreList ScoreList;
+    public ScoreList ScoreList => _scoreList;
+    private readonly ScoreList _scoreList;
 
     public LeverService()
     {
-        ScoreList = new ScoreList();
+        _scoreList = new ScoreList();
     }
 
-    public async Task LeverAsync(WebSocket webSocket)
+    public async Task LeverAsync(WebSocket webSocket, string username)
     {
         var message = await webSocket.ReceiveAsync<DiceRequest>();
 
         while (!message.ReceiveResult.CloseStatus.HasValue)
         {
             if (message.Message != null) {
-                await webSocket.SendAsync(Sort(message.Message.Sides));
+                await webSocket.SendAsync(Sort(message.Message.Sides, username));
             }
 
             await webSocket.ReceiveAsync<DiceRequest>();
@@ -44,7 +46,7 @@ public class LeverService: ILeverService {
         return new Random().Next(5, 10) * razon;
     }
 
-    public DiceResult Sort(int sides)
+    public DiceResult Sort(int sides, string username)
     {
         var razon = 360 / sides;
 
@@ -55,10 +57,10 @@ public class LeverService: ILeverService {
         var sortResult = new DiceResult(dice1Steps, dice2Steps, dice3Steps);
 
         if (sortResult.Winner) {
-            var player = ScoreList.FirstOrDefault(x => x.Name == "player");
+            var player = ScoreList.FirstOrDefault(x => x.Name == username);
 
             if (player == null) {
-                player = new Player("player", 0);
+                player = new Player(username, 0);
                 ScoreList.Add(player);
             }
 

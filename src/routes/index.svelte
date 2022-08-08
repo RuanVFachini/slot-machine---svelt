@@ -1,10 +1,30 @@
 <script lang="ts">
+	import axios from "axios";
 	import Machine from "$lib/machine.svelte";
+
+	let token = "";
+	let username = "";
+	let showMachine = false;
+
+	function login() {
+		axios.post<string>("http://localhost:5151/auth/login", { username })
+			.then(resp => {
+				token = resp.data;	
+				showMachine = true;
+			});
+	}
 </script>
 
 <div class="flex-row">
 	<div class="flex-column-center">
-		<Machine></Machine>
+		{#if showMachine}
+		<Machine bind:token={token}></Machine>
+		{:else}
+			<div>
+				<input type="text" placeholder="Name" bind:value={username}>
+				<button on:click={login}>Login</button>
+			</div>
+		{/if}
 	</div>
 </div>
 
