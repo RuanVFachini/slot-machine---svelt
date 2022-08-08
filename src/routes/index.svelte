@@ -5,12 +5,18 @@
 	let token = "";
 	let username = "";
 	let showMachine = false;
+	let errorMessage = "";
 
-	function login() {
-		axios.post<string>("http://localhost:5151/auth/login", { username })
+	async function login() {
+		await axios.post<string>("http://localhost:5151/auth/login", { username })
 			.then(resp => {
 				token = resp.data;	
 				showMachine = true;
+			})
+			.catch(error => {
+				if (error.response.status == "400") {
+					errorMessage = error.response.data;
+				}
 			});
 	}
 </script>
@@ -22,6 +28,7 @@
 		{:else}
 			<div>
 				<input type="text" placeholder="Name" bind:value={username}>
+				<p class="login-error">{errorMessage}</p>
 				<button on:click={login}>Login</button>
 			</div>
 		{/if}
@@ -41,5 +48,9 @@
 	flex: 1;
 	display: flex;
 	justify-content: center;
+}
+.login-error {
+	font-size: 8px;
+	color: red;
 }
 </style>

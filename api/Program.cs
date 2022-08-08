@@ -62,12 +62,13 @@ app.Map("score", async (
   [FromServices] ITokenService tokenService,
   [FromServices] ISessionService sessionService) => {
 
-  if (!context.WebSockets.IsWebSocketRequest) {
+  context.Request.Query.TryGetValue("Token", out var token);
+
+  if (!context.WebSockets.IsWebSocketRequest || token == string.Empty) {
     context.Response.StatusCode = (int) HttpStatusCode.BadRequest;
     return;
   }
 
-  var token = context.Request.Query["Token"];
   var jwtValidation = tokenService.Validate(token);
 
   if (jwtValidation.Authenticated) {
@@ -85,13 +86,14 @@ app.Map("sort", async (
   HttpContext context,
   [FromServices] ILeverService leverService,
   [FromServices] ITokenService tokenService) => {
+  
+  context.Request.Query.TryGetValue("Token", out var token);
 
-  if (!context.WebSockets.IsWebSocketRequest) {
+  if (!context.WebSockets.IsWebSocketRequest || token == string.Empty) {
     context.Response.StatusCode = (int) HttpStatusCode.BadRequest;
     return;
   }
-
-  var token = context.Request.Query["Token"];
+  
   var jwtValidation = tokenService.Validate(token);
 
   if (jwtValidation.Authenticated) {

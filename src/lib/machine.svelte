@@ -18,7 +18,6 @@
     }
 
     onMount(() => {
-        debugger
         socket = new WebSocketConnection(`wss://localhost:7123/score?Token=${token}`);
 
         socket.onmessage = (message) => {
