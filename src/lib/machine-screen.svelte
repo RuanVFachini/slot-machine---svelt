@@ -35,14 +35,16 @@
 </script>
 
 <div class="screen">
-    <div class="screen-image">
-        <Dice degre={diceRotate1}></Dice>
-    </div>
-    <div class="screen-image">
-        <Dice degre={diceRotate2}></Dice>
-    </div>
-    <div class="screen-image">
-        <Dice degre={diceRotate3}></Dice>
+    <div class="screen-background">
+        <div class="screen-image">
+            <Dice degre={diceRotate1}></Dice>
+        </div>
+        <div class="screen-image">
+            <Dice degre={diceRotate2}></Dice>
+        </div>
+        <div class="screen-image">
+            <Dice degre={diceRotate3}></Dice>
+        </div>
     </div>
 </div>
 
@@ -61,5 +63,11 @@
         flex: 1;
         display: flex;
         padding: 20px;
+    }
+
+    .screen-background {
+        background-color: rgb(202, 243, 53);
+        display: flex;
+        flex: 1;
     }
 </style>

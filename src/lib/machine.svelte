@@ -67,7 +67,7 @@
     }
 
     .monitor {
-        height: 340px;
+        height: 300px;
         max-width: 100%;
         display: flex;
         outline: 20px solid gray;

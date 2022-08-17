@@ -99,11 +99,10 @@ app.Map("score", async (
 
   using var webSocket = await context.WebSockets.AcceptWebSocketAsync();
   
-  while(true) {
+  while(webSocket.State != WebSocketState.Closed) {
     await webSocket.SendAsync(sessionService.Sessions);
     Thread.Sleep(1000);
   }
-  
 });
 
 app.Map("sort", async (

@@ -13,3 +13,4 @@ node_modules
 
 api/bin
 api/obj
+.vs
