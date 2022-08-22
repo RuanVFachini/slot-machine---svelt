@@ -14,9 +14,13 @@ public static class WebSocketExtensions {
 
         body = body.Replace("\0", "");
 
-        var data = JsonSerializer.Deserialize<T>(body, new JsonSerializerOptions() {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-        });
+        T? data = default(T);
+
+        if (body.Trim().Length > 0) {
+            data = JsonSerializer.Deserialize<T>(body, new JsonSerializerOptions() {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            });
+        }
 
         return (receiveResult, data);
     }

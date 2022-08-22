@@ -32,11 +32,14 @@ public class LeverService: ILeverService
                 if (sortResult.Winner) {
                     _sessionService.IncreaseScore(username);
                 }
+                
                 await webSocket.SendAsync(sortResult);
             }
 
-            await webSocket.ReceiveAsync<DiceRequest>();
+            message = await webSocket.ReceiveAsync<DiceRequest>();
         }
+
+        _sessionService.DeleteSession(username);
 
         await webSocket.CloseAsync(
             message.ReceiveResult.CloseStatus.Value,

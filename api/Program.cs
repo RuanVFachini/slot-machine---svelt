@@ -81,7 +81,7 @@ app.MapControllers();
 
 var webSocketOptions = new WebSocketOptions
 {
-    KeepAliveInterval = TimeSpan.FromMinutes(2),
+    KeepAliveInterval = TimeSpan.FromSeconds(10),
 };
 
 app.UseWebSockets(webSocketOptions);
@@ -95,14 +95,19 @@ app.Map("score", async (
   if (!context.WebSockets.IsWebSocketRequest) {
     context.Response.StatusCode = (int) HttpStatusCode.BadRequest;
     return;
-  }
+    }
 
-  using var webSocket = await context.WebSockets.AcceptWebSocketAsync();
-  
-  while(webSocket.State != WebSocketState.Closed) {
-    await webSocket.SendAsync(sessionService.Sessions);
-    Thread.Sleep(1000);
-  }
+    using WebSocket webSocket = await context.WebSockets.AcceptWebSocketAsync();
+    
+    while(webSocket.State != WebSocketState.Closed) {
+      await webSocket.SendAsync(sessionService.Sessions);
+      Thread.Sleep(500);
+    }
+
+    await webSocket.CloseAsync(
+      WebSocketCloseStatus.NormalClosure,
+      webSocket.CloseStatusDescription,
+      CancellationToken.None);
 });
 
 app.Map("sort", async (
@@ -117,7 +122,11 @@ app.Map("sort", async (
 
   using var webSocket = await context.WebSockets.AcceptWebSocketAsync();
 
-  await leverService.LeverAsync(webSocket, context.User.Claims.First(x => x.Type == ClaimTypes.NameIdentifier).Value);
+  var username = context.User.Claims
+    .First(x => x.Type == ClaimTypes.NameIdentifier)
+    .Value;
+
+  await leverService.LeverAsync(webSocket, username);
 });
 
 await app.RunAsync();
