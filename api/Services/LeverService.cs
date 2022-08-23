@@ -32,7 +32,7 @@ public class LeverService: ILeverService
                 if (sortResult.Winner) {
                     _sessionService.IncreaseScore(username);
                 }
-                
+
                 await webSocket.SendAsync(sortResult);
             }
 
@@ -48,7 +48,7 @@ public class LeverService: ILeverService
     }
 
     private int DiceSort(int razon){
-        return new Random().Next(5, 10) * razon;
+        return new Random().Next(150, 300) * razon;
     }
 
     public DiceResult Sort(int sides, string username)

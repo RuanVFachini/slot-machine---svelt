@@ -17,10 +17,16 @@
 
         socket.onmessage = (message) => {
             if (typeof message.data == 'string') {
+                diceRotate1 = 0;
+                diceRotate2 = 0;
+                diceRotate3 = 0;
                 let result = JSON.parse(message.data) as DiceResult;
-                diceRotate1 = result.dice1Steps;
-                diceRotate2 = result.dice2Steps;
-                diceRotate3 = result.dice3Steps;
+                setTimeout(() => {
+                    diceRotate1 = result.dice1Steps;
+                    diceRotate2 = result.dice2Steps;
+                    diceRotate3 = result.dice3Steps;
+                }, 500);
+                
             }
         };
     });

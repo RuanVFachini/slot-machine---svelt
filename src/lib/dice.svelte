@@ -1,11 +1,19 @@
 <script lang="ts">
 import { cubicInOut } from "svelte/easing";
+import fruit1 from "./../assets/images/fruit-1.png";
+import fruit2 from "./../assets/images/fruit-2.png";
+import fruit3 from "./../assets/images/fruit-3.png";
+import fruit4 from "./../assets/images/fruit-4.png";
+import fruit5 from "./../assets/images/fruit-5.png";
+import fruit6 from "./../assets/images/fruit-6.png";
+import fruit7 from "./../assets/images/fruit-7.png";
+import fruit8 from "./../assets/images/fruit-8.png";
 
 import { tweened } from "svelte/motion";
     export let degre = 0;
 
     const rotateDegre = tweened(0, {
-        duration: 300,
+        duration: 1000,
         easing: cubicInOut
     });
 
@@ -14,19 +22,41 @@ import { tweened } from "svelte/motion";
     }
 
 </script>
-
 <div id="D3Cube" style="transform: rotateX({$rotateDegre}deg)">
-    <div id="side1" style="border: 1px solid black;"></div>
-    <div id="side2" style="border: 1px solid black;"></div>
-    <div id="side3" style="border: 1px solid black;"></div>
-    <div id="side4" style="border: 1px solid black;"></div>
-    <div id="side5" style="border: 1px solid black;"></div>
-    <div id="side6" style="border: 1px solid black;"></div>
-    <div id="side7" style="border: 1px solid black;"></div>
-    <div id="side8" style="border: 1px solid black;"></div>
+    <div id="side1" class="dice-card">
+        <img height="96" width="96" src={fruit1} alt="fruit-1"/>
+    </div>
+    <div id="side2" class="dice-card">
+        <img height="96" width="96" src={fruit2} alt="fruit-2"/>
+    </div>
+    <div id="side3" class="dice-card">
+        <img height="96" width="96" src={fruit3} alt="fruit-3"/>
+    </div>
+    <div id="side4" class="dice-card">
+        <img height="96" width="96" src={fruit4} alt="fruit-4"/>
+    </div>
+    <div id="side5" class="dice-card">
+        <img height="96" width="96" src={fruit5} alt="fruit-5"/>
+    </div>
+    <div id="side6" class="dice-card">
+        <img height="96" width="96" src={fruit6} alt="fruit-6"/>
+    </div>
+    <div id="side7" class="dice-card">
+        <img height="96" width="96" src={fruit7} alt="fruit-7"/>
+    </div>
+    <div id="side8" class="dice-card">
+        <img height="96" width="96" src={fruit8} alt="fruit-8"/>
+    </div>
 </div>
 
 <style scoped>
+    .dice-card {
+        border: 1px solid black;
+        display:flex;
+        justify-content: center;
+        align-items: center;
+        background-color: rgb(255, 255, 255);
+    }
     #D3Cube {
         width: 110px;
         height: 100px;
@@ -48,42 +78,34 @@ import { tweened } from "svelte/motion";
 
     #side1 {
         transform: rotatex(0deg) translateX(0px) translateY(0px) translateZ(122px);
-        background-color: rgb(13, 241, 32);
     }
 
     #side2 {
         transform: rotatex(45deg) translateX(0px) translateY(0px) translateZ(122px);
-        background-color: rgb(1, 107, 18);
     }
 
     #side3 {
         transform: rotatex(90deg) translateX(0px) translateY(0px) translateZ(122px);
-        background-color: rgb(23, 77, 253);
     }
 
     #side4 {
         transform: rotatex(135deg) translateX(0px) translateY(0px) translateZ(122px);
-        background-color: rgb(3, 188, 245);
     }
 
     #side5 {
         transform: rotatex(180deg) translateX(0px) translateY(0px) translateZ(122px);
-        background-color: rgb(248, 31, 31);
     }
 
     #side6 {
         transform: rotatex(225deg) translateX(0px) translateY(0px) translateZ(122px);
-        background-color: rgb(253, 94, 21);
     }
 
     #side7 {
         transform: rotatex(270deg) translateX(0px) translateY(0px) translateZ(122px);
-        background-color: rgb(221, 236, 13);
     }
 
     #side8 {
         transform: rotatex(315deg) translateX(0px) translateY(0px) translateZ(122px);
-        background-color: rgb(255, 16, 215);
     }
 
 
